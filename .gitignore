@@ -5,10 +5,10 @@
 
 
 ## project specific
-datamodel/data/
-terraform/credential/
-terraform/data/
-**credential**
+terraform/credentials/*
+!terraform/credentials/.gitkeep 
+terraform/data/*
+!terraform/data/.gitkeep
 **tfstate**
 terraform/.terraform/
 **terraform.lock**
