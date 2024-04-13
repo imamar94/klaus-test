@@ -3,7 +3,18 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+
+## project specific
+datamodel/data/
+terraform/credential/
+terraform/data/
+**credential**
+**tfstate**
+terraform/.terraform/
+**terraform.lock**
+
 # User-specific files
+.venv/
 *.rsuser
 *.suo
 *.user
