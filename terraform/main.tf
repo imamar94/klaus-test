@@ -46,14 +46,17 @@ resource "google_bigquery_dataset" "model" {
   location = "EU"
 }
 
+
+## BQ DBT SA
 resource "google_service_account" "bigquery_sa_dbt" {
   account_id   = "bq-sa-dbt"
   display_name = "BigQuery Service Account DBT"
 }
 
 resource "google_project_iam_member" "bigquery_job_user" {
+  for_each = toset([ "roles/bigquery.jobUser", "roles/bigquery.dataEditor", "roles/storage.objectViewer" ])
   project = "klaus-test-420018"
-  role    = "roles/bigquery.jobUser"
+  role    = each.value
   member  = "serviceAccount:${google_service_account.bigquery_sa_dbt.email}"
 }
 
@@ -74,10 +77,36 @@ resource "google_service_account_key" "bigquery_sa_dbt_key" {
   public_key_type    = "TYPE_X509_PEM_FILE"
 }
 
-resource "local_file" "service_account" {
+resource "local_file" "service_account_dbt" {
   content           = base64decode(google_service_account_key.bigquery_sa_dbt_key.private_key)
-  filename          = "credentials/bq_service_account.json"
+  filename          = "credentials/bq_sa_dbt.json"
 }
+
+## BQ SA Data Reader
+
+resource "google_service_account" "bq-sa-data-reader" {
+  account_id   = "bq-sa-datareader"
+  display_name = "BigQuery Service Account for Data Reader"
+}
+
+resource "google_project_iam_member" "bigquery-data-reader-iam" {
+  for_each = toset([ "roles/bigquery.dataViewer", "roles/storage.objectViewer", "roles/bigquery.jobUser" ])
+  project = "klaus-test-420018"
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.bq-sa-data-reader.email}"
+}
+
+resource "google_service_account_key" "bigquery_sa_datareader_key" {
+  service_account_id = google_service_account.bq-sa-data-reader.account_id
+  public_key_type    = "TYPE_X509_PEM_FILE"
+}
+
+resource "local_file" "service_account_datareader" {
+  content           = base64decode(google_service_account_key.bigquery_sa_datareader_key.private_key)
+  filename          = "credentials/bq_sa_datareader.json"
+}
+
+## BQ Tables
 
 resource "google_bigquery_table" "source-table" {
   for_each = { for f in var.files : f => f if strcontains(lower(f), ".csv") }
