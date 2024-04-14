@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: stg__autoqa_ratings
+    description: "Staging model for autoqa_ratings table from source"
+    config:
+      materialized: 'view'
+      schema: 'stg'
+      tags: ['staging']
+    columns:
+      - name: autoqa_review_id
+      - name: autoqa_rating_id
+      - name: payment_id
+      - name: team_id
+      - name: payment_token_id
+      - name: external_ticket_id
+      - name: rating_category_id
+      - name: rating_category_name
+      - name: rating_scale_score
+      - name: score
+      - name: reviewee_internal_id

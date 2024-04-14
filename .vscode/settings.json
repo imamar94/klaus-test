@@ -1,0 +1,31 @@
+{
+    "sqltools.connections": [
+        {
+            "name": "BigQuery",
+            "authenticator": "SERVICE_ACCOUNT",
+            "location": "eu",
+            "previewLimit": 50,
+            "driver": "BigQuery",
+            "keyfile": "/home/imamar/klaus/klaus-test/terraform/credentials/bq_sa_datareader.json"
+        },
+        {
+            "name": "BigQueryAS",
+            "authenticator": "SERVICE_ACCOUNT",
+            "location": "eu",
+            "previewLimit": 50,
+            "driver": "BigQuery",
+            "keyfile": "/home/imamar/klaus/klaus-test/terraform/credentials/bq_sa_dbt.json"
+        },
+        {
+            "name": "BigQuery123",
+            "authenticator": "SERVICE_ACCOUNT",
+            "location": "us",
+            "previewLimit": 50,
+            "driver": "BigQuery",
+            "keyfile": "/home/imamar/klaus/klaus-test/terraform/credentials/bq_sa_dbt.json",
+            "group": "master"
+        }
+    ],
+    "dbt.queryLimit": 500,
+    "dbt.enableNewLineagePanel": true
+}

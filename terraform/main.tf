@@ -1,10 +1,13 @@
-provider "google" {
-  project     = "klaus-test-420018"
-  credentials = file("credentials/credentials.json")
-  region  = "europe-west1"
+variable "project-config" {
+  type = map(string)
+  default = {
+    project = "klaus-test-420018"
+    region  = "us-central1"
+    credentials = "credentials/credentials.json"
+    bucket = "klaus-test-bucket"
+    default_location = "US"
+  }
 }
-
-## GCP Storage & upload initial data
 
 variable "files" {
   # put the path to the files you want to upload here
@@ -20,9 +23,18 @@ variable "files" {
   }
 }
 
+provider "google" {
+  project     = var.project-config.project
+  credentials = file(var.project-config.credentials)
+  region  = var.project-config.region
+}
+
+## GCP Storage & upload initial data
+
 resource "google_storage_bucket" "klaus-test-bucket" {
-  name     = "klaus-test-bucket"
-  location = "EU"
+  name     = var.project-config.bucket
+  location = var.project-config.default_location
+  force_destroy = true
 }
 
 resource "google_storage_bucket_object" "upload-inital-data" {
@@ -38,12 +50,7 @@ resource "google_storage_bucket_object" "upload-inital-data" {
 
 resource "google_bigquery_dataset" "source" {
   dataset_id = "source"
-  location = "EU"
-}
-
-resource "google_bigquery_dataset" "model" {
-  dataset_id = "model"
-  location = "EU"
+  location = var.project-config.default_location
 }
 
 
@@ -53,23 +60,18 @@ resource "google_service_account" "bigquery_sa_dbt" {
   display_name = "BigQuery Service Account DBT"
 }
 
-resource "google_project_iam_member" "bigquery_job_user" {
-  for_each = toset([ "roles/bigquery.jobUser", "roles/bigquery.dataEditor", "roles/storage.objectViewer" ])
-  project = "klaus-test-420018"
+resource "google_project_iam_member" "bq-data-editor-iam" {
+  for_each = toset([ "roles/bigquery.user", "roles/bigquery.dataEditor", "roles/storage.objectViewer", "roles/bigquery.connectionUser" ])
+  project = var.project-config.project
   role    = each.value
   member  = "serviceAccount:${google_service_account.bigquery_sa_dbt.email}"
 }
 
-resource "google_bigquery_dataset_access" "bigquery_access_source" {
-  dataset_id = google_bigquery_dataset.source.dataset_id
-  role    = "roles/bigquery.dataEditor"
-  user_by_email   = google_service_account.bigquery_sa_dbt.email
-}
-
-resource "google_bigquery_dataset_access" "bigquery_access_model" {
-  dataset_id = google_bigquery_dataset.model.dataset_id
-  role    = "roles/bigquery.dataEditor"
-  user_by_email   = google_service_account.bigquery_sa_dbt.email
+resource "google_bigquery_dataset_access" "bq-dataset-editor-access" {
+  for_each = toset(["source", "model"])
+  dataset_id = each.value
+  role       = "roles/bigquery.dataEditor"
+  user_by_email = google_service_account.bigquery_sa_dbt.email
 }
 
 resource "google_service_account_key" "bigquery_sa_dbt_key" {
@@ -91,7 +93,7 @@ resource "google_service_account" "bq-sa-data-reader" {
 
 resource "google_project_iam_member" "bigquery-data-reader-iam" {
   for_each = toset([ "roles/bigquery.dataViewer", "roles/storage.objectViewer", "roles/bigquery.jobUser" ])
-  project = "klaus-test-420018"
+  project = var.project-config.project
   role    = each.value
   member  = "serviceAccount:${google_service_account.bq-sa-data-reader.email}"
 }
@@ -130,5 +132,5 @@ resource "google_bigquery_table" "source-table" {
     }
   }
 
-  depends_on = [ google_storage_bucket_object.upload-inital-data ]
+  depends_on = [ google_storage_bucket_object.upload-inital-data, google_bigquery_dataset.source ]
 }

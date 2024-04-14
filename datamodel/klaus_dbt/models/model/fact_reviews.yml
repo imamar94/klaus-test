@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: fact_reviews
+    description: "Fact model for combined manual and auto reviews entity from source"
+    config:
+      materialized: 'table'
+      schema: 'model'
+      tags: ['fact']

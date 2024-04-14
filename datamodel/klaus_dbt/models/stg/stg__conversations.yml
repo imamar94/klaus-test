@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: stg__conversations
+    description: "Staging model for conversations table from source"
+    config:
+      materialized: 'view'
+      schema: 'stg'
+      tags: ['staging']
+    columns:
+      - name: payment_id
+      - name: payment_token_id
+      - name: external_ticket_id
+      - name: conversation_created_at
+      - name: conversation_created_at_date
+      - name: channel
+      - name: assignee_id
+      - name: updated_at
+      - name: closed_at
+      - name: message_count
+      - name: last_reply_at
+      - name: language
+      - name: imported_at
+      - name: unique_public_agent_count
+      - name: public_mean_character_count
+      - name: public_mean_word_count
+      - name: private_message_count
+      - name: public_message_count
+      - name: klaus_sentiment
+      - name: is_closed
+      - name: agent_most_public_messages
+      - name: first_response_time
+      - name: first_resolution_time_seconds
+      - name: full_resolution_time_seconds

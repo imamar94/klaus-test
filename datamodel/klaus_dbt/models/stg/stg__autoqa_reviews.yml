@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: stg__autoqa_reviews
+    description: "Staging model for autoqa_reviews table from source"
+    config:
+      materialized: 'view'
+      schema: 'stg'
+      tags: ['staging']
+    columns:
+      - name: autoqa_review_id
+      - name: payment_id
+      - name: payment_token_id
+      - name: external_ticket_id
+      - name: created_at
+      - name: conversation_created_at
+      - name: conversation_created_date
+      - name: team_id
+      - name: reviewee_internal_id
+      - name: updated_at

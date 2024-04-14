@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: stg__autoqa_root_cause
+    description: "Staging model for autoqa_root_cause table from source"
+    config:
+      materialized: 'view'
+      schema: 'stg'
+      tags: ['staging']
+    columns:
+      - name: autoqa_rating_id
+      - name: category
+      - name: count
+      - name: root_cause

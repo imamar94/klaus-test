@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: stg__manual_rating
+    description: "Staging model for manual_rating table from source"
+    config:
+      materialized: 'view'
+      schema: 'stg'
+      tags: ['staging']
+    columns:
+      - name: payment_id
+      - name: team_id
+      - name: review_id
+      - name: category_id
+      - name: rating
+      - name: cause
+      - name: rating_max
+      - name: weight
+      - name: critical
+      - name: category_name

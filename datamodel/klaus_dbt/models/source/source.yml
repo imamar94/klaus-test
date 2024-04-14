@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: source
+    database: klaus-test-420018
+    schema: source
+    tables:
+      - name: autoqa_ratings
+      - name: autoqa_reviews
+      - name: autoqa_root_cause
+      - name: conversations
+      - name: manual_rating
+      - name: manual_reviews

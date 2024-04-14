@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: stg__manual_reviews
+    description: "Staging model for manual_reviews table from source"
+    config:
+      materialized: 'view'
+      schema: 'stg'
+      tags: ['staging']
+    columns:
+      - name: review_id
+      - name: payment_id
+      - name: payment_token_id
+      - name: created
+      - name: conversation_created_date
+      - name: external_ticket_id
+      - name: team_id
+      - name: reviewer_id
+      - name: reviewee_id
+      - name: comment_id
+      - name: scorecard_id
+      - name: scorecard_tag
+      - name: score
+      - name: updated_at
+      - name: updated_by
+      - name: assignment_review
+      - name: seen
+      - name: disputed
+      - name: review_time_seconds
+      - name: assignment_name
+      - name: imported_at
