@@ -6,6 +6,8 @@ project_id = 'klaus-test-420018'
 sa_email = 'etlpipeline@klaus-test-420018.iam.gserviceaccount.com'
 composer_environment = 'etl-environment'
 location = 'us-central1'  # update this to your composer location
+gcs_bucket = 'us-central1-etl-environment-a9c5b511-bucket'
+gcs_folder_path = 'dags/pipelines/'
 
 # Get the absolute path of the current file
 file_path = os.path.abspath(__file__)
@@ -16,9 +18,7 @@ file_directory = os.path.dirname(file_path)
 # Construct the relative path to the credentials file
 credentials_path = os.path.join("/".join(file_directory.split("/")[:-1]), 'terraform/credentials/composer_credentials.json')
 dag_directory = os.path.join(file_directory, 'dags/')
-
-# Set the GOOGLE_APPLICATION_CREDENTIALS environment variable
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+pipeline_directory = os.path.join(file_directory, gcs_folder_path)
 
 # Get list of all DAG files
 dag_files = [f for f in os.listdir(dag_directory) if f.endswith('.py')]
@@ -31,6 +31,15 @@ if __name__ == '__main__':
         f' --project {project_id}'
     )
     subprocess.run(cmd, shell=True, check=True)
+
+    # Construct the gcloud command to upload the folder to GCS
+    cmd = ('gsutil -m cp -r '
+        f'{pipeline_directory}* '
+        f'gs://{gcs_bucket}/{gcs_folder_path}/')
+
+    # Execute the command
+    subprocess.run(cmd, shell=True, check=True)
+    
     # Loop over all DAG files and upload them
     for dag_file in dag_files:
         print(f'Uploading DAG file: {dag_file}')
