@@ -1,5 +1,8 @@
 WITH s AS (
-    SELECT * FROM {{ ref('stg__conversations') }}
+    SELECT 
+        * 
+        , ROW_NUMBER() OVER (PARTITION BY external_ticket_id ORDER BY imported_at DESC) AS rn
+    FROM {{ ref('stg__conversations') }}
 )
 
 SELECT DISTINCT
@@ -28,3 +31,4 @@ SELECT DISTINCT
     , s.most_active_internal_user_id
     , s.deleted_at
 FROM s
+WHERE rn = 1

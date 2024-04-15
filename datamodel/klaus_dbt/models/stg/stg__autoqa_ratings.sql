@@ -9,8 +9,8 @@ SELECT
     , s.team_id
     , s.payment_token_id
     , s.external_ticket_id
-    , s.rating_category_id
-    , s.rating_category_name
+    , s.rating_category_id AS category_id
+    , s.rating_category_name AS category_name
     , s.rating_scale_score
     , s.score
     , s.reviewee_internal_id

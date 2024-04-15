@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: dim_rating_category
+    description: "Dimmension model for rating category"
+    config:
+      materialized: 'table'
+      schema: 'model'
+      tags: ['dim']

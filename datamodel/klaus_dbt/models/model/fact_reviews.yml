@@ -7,3 +7,8 @@ models:
       materialized: 'table'
       schema: 'model'
       tags: ['fact']
+    columns:
+      - name: review_key
+        tests:
+          - unique
+          - not_null

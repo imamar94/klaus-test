@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: fact_reviews_manual
+    description: "Fact model for complete attribute of manual reviews"
+    config:
+      materialized: 'table'
+      schema: 'model'
+      tags: ['fact']
+    columns:
+      - name: review_key
+        tests:
+          - unique
+          - not_null

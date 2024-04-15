@@ -7,7 +7,7 @@ SELECT
     s.team_id,
     s.review_id,
     s.category_id,
-    s.rating,
+    CASE WHEN s.rating = 42 THEN NULL ELSE s.rating END AS rating,
     s.cause,
     s.rating_max,
     s.weight,

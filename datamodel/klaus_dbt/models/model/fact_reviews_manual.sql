@@ -4,11 +4,11 @@ WITH source AS (
 
 SELECT
     {{ dbt_utils.generate_surrogate_key(
-        ['r_manual.review_id', "'manual'"]) }} AS review_key
+        ['cast(review_id as string)', "'manual'"]) }} AS review_key,
     review_id,
     payment_id,
     payment_token_id,
-    created AS created_at,
+    created_at,
     team_id,
     reviewer_id,
     reviewee_id,

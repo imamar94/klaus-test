@@ -14,8 +14,8 @@ models:
       - name: team_id
       - name: payment_token_id
       - name: external_ticket_id
-      - name: rating_category_id
-      - name: rating_category_name
+      - name: category_id
+      - name: category_name
       - name: rating_scale_score
       - name: score
       - name: reviewee_internal_id
