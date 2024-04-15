@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: fact_rating_rootcause_autoqa
+    description: "Fact model for rating root cause for autoqa"
+    config:
+      materialized: 'table'
+      schema: 'model'
+      tags: ['fact']
+    columns:
+      - name: autoqa_rootcause_key
+        tests:
+          - unique
+          - not_null

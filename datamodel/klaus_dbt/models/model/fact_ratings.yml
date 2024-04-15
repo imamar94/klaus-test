@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: fact_ratings
+    description: "Fact model for rating entity from source, both manual and autoqa"
+    config:
+      materialized: 'table'
+      schema: 'model'
+      tags: ['fact']
+    columns:
+      - name: rating_key
+        tests:
+          - unique
+          - not_null
