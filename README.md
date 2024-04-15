@@ -48,9 +48,9 @@ klaus_dbt:
   target: dev
 ```
 
-1. Clean any existing dbt artifacts and install dependencies by running `dbt clean && dbt deps`.
+3. Clean any existing dbt artifacts and install dependencies by running `dbt clean && dbt deps`.
 
-2. Run the transformation with the following commands:
+4. Run the transformation with the following commands:
 
 ```bash
 # Run ETL to production
