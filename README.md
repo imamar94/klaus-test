@@ -59,3 +59,17 @@ dbt run --target prod
 # Run tests
 dbt test --target prod
 ```
+
+## Running the ETL Pipeline with Google Cloud Composer
+
+Follow these steps to run the ETL pipeline:
+
+1. Open your terminal and navigate to the `composer/` directory in the project root. You can do this by running the command `cd composer/`.
+
+2. Inside the `composer/` directory, you will find a `dags/` directory. This is where all your Directed Acyclic Graphs (DAGs) for Airflow are stored. If you want to submit a new DAG, place your Python script in this directory.
+
+3. If you are using the Pipeline/Step mini framework, you can build your pipeline inside the `composer/dags/pipelines/` directory. Each pipeline should be a separate Python script and should follow the structure and syntax of the existing pipeline scripts.
+
+4. Once your DAGs are in place, you can deploy them to your Airflow environment. To do this, run the command `python main.py` inside the `composer/` directory. This script will upload your DAGs to the Airflow environment.
+
+Please ensure that you have the necessary permissions and that your Google Cloud SDK is properly configured before running these commands.

@@ -74,6 +74,11 @@ resource "google_bigquery_dataset" "source" {
   location = var.project-config.default_location
 }
 
+resource "google_bigquery_dataset" "tmp" {
+  dataset_id = "tmp"
+  location = var.project-config.default_location
+}
+
 
 ## BQ DBT SA
 resource "google_service_account" "bigquery_sa_dbt" {

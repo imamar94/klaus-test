@@ -7,7 +7,7 @@ from pipelines.pipeline_etl_json import pipeline
 default_dag_args = {
     "start_date": datetime.datetime(2024, 4, 13),
     "schedule_interval": datetime.timedelta(days=1),
-    "dag_title": "extract_json_etl"
+    "dag_title": "extract_json_etl_pipeline4"
 }
 
 initial_data = {
