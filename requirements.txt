@@ -1,3 +1,6 @@
 dbt-bigquery==1.6.12
 dbt-core==1.6.11
 setuptools==69.5.1
+google-cloud-storage==2.16.0
+apache-airflow[celery]==2.9.0
+apache-airflow-providers-google==10.1.0

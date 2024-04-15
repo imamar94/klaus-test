@@ -2,6 +2,7 @@ variable "project-config" {
   type = map(string)
   default = {
     project = "klaus-test-420018"
+    project_number = "382984419594"
     region  = "us-central1"
     credentials = "credentials/credentials.json"
     bucket = "klaus-test-bucket"
@@ -27,6 +28,26 @@ provider "google" {
   project     = var.project-config.project
   credentials = file(var.project-config.credentials)
   region  = var.project-config.region
+}
+
+## Enable APIs
+variable "gcp_service_list" {
+  description = "The list of apis necessary for the project"
+  type        = list(string)
+  default = [
+    "compute.googleapis.com",
+    "composer.googleapis.com",
+    "storage.googleapis.com",
+    "bigquery.googleapis.com",
+    "iam.googleapis.com"
+  ]
+}
+
+resource "google_project_service" "all" {
+  for_each           = toset(var.gcp_service_list)
+  project            = var.project-config.project
+  service            = each.key
+  disable_on_destroy = false
 }
 
 ## GCP Storage & upload initial data
@@ -68,8 +89,7 @@ resource "google_project_iam_member" "bq-data-editor-iam" {
 }
 
 resource "google_bigquery_dataset_access" "bq-dataset-editor-access" {
-  for_each = toset(["source", "model"])
-  dataset_id = each.value
+  dataset_id = "source"
   role       = "roles/bigquery.dataEditor"
   user_by_email = google_service_account.bigquery_sa_dbt.email
 }
@@ -133,4 +153,60 @@ resource "google_bigquery_table" "source-table" {
   }
 
   depends_on = [ google_storage_bucket_object.upload-inital-data, google_bigquery_dataset.source ]
+}
+
+## Cloud Composer
+resource "google_service_account" "etlpipeline" {
+  account_id   = "etlpipeline"
+  display_name = "ETL SA"
+  description  = "user-managed service account for Composer"
+  project = var.project-config.project
+  depends_on = [google_project_service.all]
+}
+
+resource "google_project_iam_member" "allbuild" {
+  project    = var.project-config.project
+  for_each   = toset([ "roles/composer.worker", "roles/bigquery.admin", "roles/storage.objectAdmin", "roles/composer.ServiceAgentV2Ext" ])
+  role       = each.key
+  member     = "serviceAccount:${google_service_account.etlpipeline.email}"
+  depends_on = [google_project_service.all,google_service_account.etlpipeline]
+}
+
+resource "google_service_account_key" "sa-composer-key" {
+  service_account_id = google_service_account.etlpipeline.account_id
+  public_key_type    = "TYPE_X509_PEM_FILE"
+}
+
+resource "local_file" "sa-composer" {
+  content           = base64decode(google_service_account_key.sa-composer-key.private_key)
+  filename          = "credentials/composer_credentials.json"
+}
+
+resource "google_project_iam_member" "composerAgent" {
+  project    = var.project-config.project
+  role       = "roles/composer.ServiceAgentV2Ext"
+  member     = "serviceAccount:service-${var.project-config.project_number}@cloudcomposer-accounts.iam.gserviceaccount.com"
+  depends_on = [google_project_service.all]
+}
+
+# Create Composer environment
+resource "google_composer_environment" "etl-composter" {
+  project   = var.project-config.project
+  name      = "etl-environment"
+  region    = var.project-config.region
+  config {
+
+    software_config {
+      image_version = "composer-2.6.6-airflow-2.7.3"
+      env_variables = {
+        AIRFLOW_VAR_PROJECT_ID  = var.project-config.project
+        AIRFLOW_VAR_GCE_ZONE    = "a"
+        AIRFLOW_VAR_BUCKET_PATH = "gs://${var.project-config.bucket}/airflow/"
+      }
+    }
+    node_config {
+      service_account = google_service_account.etlpipeline.email
+    }
+  }
+  depends_on = [google_project_service.all, google_service_account.etlpipeline, google_project_iam_member.allbuild, google_project_iam_member.composerAgent]
 }
